@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	 	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	 	<script src="/socket.io/socket.io.js"></script>
+		<script>
+			var _nick = "dave";
+			var socket = io.connect('/');
+			var players = {};
+			var players_s = {};
+			var last_time = 0;
+			socket.on('joined', function (data) {
+			  	players = data;
+			  	players_s = data;
+			  	console.log(players);
+
+			  	socket.emit('add_player', {
+			  		nick: _nick
+			  	})
+			});
+
+			var jump_speed = 50;
+
+			var moving = null;
+			var gdir = null;
+
+			var downs = {};
+
+			var jumping = false;
+
+		  	socket.on('positions', function (data) {
+		  		players_s = data;
+		  		console.log(players);
+		  		draw_players();
+		  	});
+
+		  	$(document).keydown(function(e){
+		  		ud();
+		  		var k = e.which;
+				//console.log(k);
+				if (k==68 && !downs[68]){
+					move(1);
+					console.log('move 1')
+					socket.emit('keydown', {nick:_nick,key:k});
+				} else if (k==65 && !downs[65]){
+					move(-1);
+					console.log('move -1')
+					socket.emit('keydown', {nick:_nick,key:k});
+				}
+				if (k==87 && !downs[87] && !jumping){
+					console.log('jump')
+					jump_up();
+					socket.emit('keydown', {nick:_nick,key:k});
+				}  	
+				downs[k]=true;
+			});
+
+		  	$(document).keyup(function(e){
+		  		ud()
+		  		var k = e.which;
+				console.log(k);
+				downs[k]=false;
+				if (k==68){
+					if (gdir == 1)
+						clearTimeout(moving);
+					socket.emit('keyup', {nick:_nick,key:k});
+				} else if (k==65){
+					if (gdir == -1)
+						clearTimeout(moving);
+					socket.emit('keyup', {nick:_nick,key:k});
+				} else if (k==87){
+					// socket.emit('keyup', {nick:_nick,key:"w"});
+				}  	
+			});
+
+		  	function move(dir){
+		  		ud()
+		  		gdir = dir;
+		  		clearTimeout(moving);
+		  		console.log(dir)
+		  		players[_nick].p_left+=dir;
+		  		$('#'+_nick).css({left:players[_nick].p_left+'%'});
+		  		moving = setTimeout(function(){
+					move(dir);
+				}, jump_speed)
+		  	}
+		  	
+			function jump_up(player){
+				jumping=true;
+				players[_nick].p_bottom+=2;
+				if (players[_nick].p_bottom<30){
+					setTimeout(function(){jump_up(players[_nick])},jump_speed);
+				} else {
+					setTimeout(function(){jump_down(players[_nick])},jump_speed);
+				}
+		  		$('#'+_nick).css({bottom:players[_nick].p_bottom+'%'});
+			}
+			function jump_down(player){
+				players[_nick].p_bottom-=2;
+				if (players[_nick].p_bottom>3) {
+					setTimeout(function(){jump_down(players[_nick])},jump_speed);
+				} else {
+					jumping = false
+				}
+		  		$('#'+_nick).css({bottom:players[_nick].p_bottom+'%'});
+			}
+
+		  	function draw_players(){
+		  		$.each(players_s,function(k,v){
+		  			$('#server_'+this.nick).css({bottom:this.p_bottom+'%', left:this.p_left+'%'});
+		  		})
+		  	}
+
+		  	function ud(){
+		  		$('#debug').html('downs[68]:'+downs[68]+'<br/>downs[65]:'+downs[65]+'<br/>gdir[65]:'+gdir)
+		  	}
+
+		</script>
+		<style type="text/css">
+		.player { width: 3%; height: 10%; background:red; position: absolute; bottom: 2%; left: 5%; }
+		</style>
+	</head>
+
+	<body>
+		<div id="debug">
+
+		</div>
+		<div id="dave" class="player"></div>
+		<div id="server_dave" class="player" style="background:none; border:2px green solid;"></div>
+
+	</body>
+</html>
