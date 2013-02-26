@@ -82,6 +82,18 @@
 				}	
 			});
 
+			$(window).blur(function() {
+				console.log(downs);
+		        $.each(downs, function(k,v){
+		        	if (v && (k==68||k==65)){
+		        		downs[k]=false;
+		        		socket.emit('keyup', {nick:_nick,key:k});
+		        		clearTimeout(moving);
+		        		ud();
+		        	}
+		        })
+		    });
+
 		  	function move(dir){
 		  		ud()
 		  		gdir = dir;
@@ -95,9 +107,11 @@
 	  			} else {
 	  				$('#'+_nick).addClass('left');
 	  			}
-		  		moving = setTimeout(function(){
-					move(dir);
-				}, jump_speed)
+	  			if (players[_nick].p_left>1 && players[_nick].p_left < 97){
+			  		moving = setTimeout(function(){
+						move(dir);
+					}, jump_speed)
+			  	}
 		  	}
 		  	
 			function jump_up(player){
@@ -146,8 +160,9 @@
 
 		</script>
 		<style type="text/css">
-		.player { width: 3%; height: 10%; background:blue; position: absolute; bottom: 2%; left: 5%; color: yellow }
-		.player:after { content:"D"; position: absolute; top: 10%; right:-10px; background: red; width:15px; z-index: 100;
+		.player { font-size: 10px; width: 3%; height: 10%; background:blue; position: absolute; bottom: 2%; left: 5%; color: yellow }
+		.player.left { text-align: right; }
+		.player:after { content:""; height: 15px; position: absolute; top: 10%; right:-10px; background: red; width:15px; z-index: 100;
 			-webkit-border-top-right-radius: 20px;
 			-webkit-border-bottom-right-radius: 20px;
 			-moz-border-radius-topright: 20px;
@@ -156,7 +171,7 @@
 			border-bottom-right-radius: 20px;
 		}
 		.player.punch:after { right:-20px; z-index: 101; }
-		.player.left:after { content:"d"; position: absolute; top: 10%; left:-10px; right: auto; background: red;
+		.player.left:after { content:""; height: 15px; position: absolute; top: 10%; left:-10px; right: auto; background: red;
 			-webkit-border-top-left-radius: 20px;
 			-webkit-border-bottom-left-radius: 20px;
 			-moz-border-radius-topleft: 20px;
@@ -171,7 +186,8 @@
 			border-bottom-right-radius: 0px;
 		}
 		.player.punch.left:after { left:-20px; }
-		.player:before { content:"- -"; position: absolute; top: -30px; right:10%; background: red; width:80%; height: 30px}
+		.player:before { content:"- -"; font-size: 12px; text-align: right; position: absolute; top: -30px; right:10%; background: red; width:80%; height: 30px}
+		.player.left:before { text-align: left; }
 		</style>
 	</head>
 

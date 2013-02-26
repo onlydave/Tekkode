@@ -9,6 +9,7 @@ var moving = null;
 var gdir = null;
 var prev = {};
 var change = false;
+var no_change = 0;
 
 server.listen(8000);
 
@@ -74,13 +75,13 @@ io.sockets.on('connection', function (socket) {
 					if (players[data.nick].dir == 1){
 						if (players[data.nick].p_left+3+7 > players[key].p_left 
 							&& players[data.nick].p_left-2 < players[key].p_left){
-							players[key].hp-=10;
+							players[key].hp-=1;
 							change=true;
 						}
 					} else {
 						if (players[data.nick].p_left-3-3-7 < players[key].p_left
 							&& players[data.nick].p_left+2 > players[key].p_left){
-							players[key].hp-=10;
+							players[key].hp-=1;
 							change=true;
 						}
 					}
@@ -101,9 +102,11 @@ function move(dir, nick){
 	players[nick].dir=dir;
 	// console.log(players[nick].p_left);
 	// console.log(players);
-	moving = setTimeout(function(){
-		move(dir, nick);
-	}, jump_speed)
+	if (players[nick].p_left>1 && players[nick].p_left < 97){
+		moving = setTimeout(function(){
+			move(dir, nick);
+		}, jump_speed);
+	}
 	change=true;
 }
 
@@ -124,8 +127,11 @@ function jump_down(player){
 }
 
 setInterval(function(){
-	if (change){
+	if (change || no_change>5){
 		io.sockets.emit('positions', players);
 		change=false;
+		no_change = 0;
+	} else {
+		no_change++;
 	}
 },200);
