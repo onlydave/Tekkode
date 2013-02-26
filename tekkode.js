@@ -32,7 +32,7 @@ var players = {};
 
 io.sockets.on('connection', function (socket) {
 
-	socket.emit('joined', players);
+	
   
 	socket.on('add_player', function(data){
 		var new_player = new player();
@@ -40,6 +40,7 @@ io.sockets.on('connection', function (socket) {
 		players[data.nick] = new_player;
 		// console.log(players);
 		change=true;
+		socket.emit('joined', players);
 	})
 
 	socket.on('keydown', function(data){
