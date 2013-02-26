@@ -17,6 +17,9 @@
 			  	socket.emit('add_player', {
 			  		nick: _nick
 			  	})
+			  	socket.emit('add_player', {
+			  		nick: 'shane'
+			  	})
 			});
 
 			var jump_speed = 33;
@@ -29,6 +32,7 @@
 			var jumping = false;
 
 		  	socket.on('positions', function (data) {
+			  	players = data;
 		  		players_s = data;
 		  		console.log(players);
 		  		draw_players();
@@ -70,7 +74,11 @@
 					socket.emit('keyup', {nick:_nick,key:k});
 				} else if (k==87){
 					// socket.emit('keyup', {nick:_nick,key:"w"});
-				}  	
+				} else if (k==32){
+					socket.emit('keyup', {nick:_nick,key:k});
+					$('#'+_nick).addClass('punch');
+					setTimeout(function(){$('#'+_nick).removeClass('punch');}, 150)
+				}	
 			});
 
 		  	function move(dir){
@@ -79,7 +87,13 @@
 		  		clearTimeout(moving);
 		  		console.log(dir)
 		  		players[_nick].p_left+=dir;
+		  		players[_nick].dir=dir;
 		  		$('#'+_nick).css({left:players[_nick].p_left+'%'});
+		  		if (dir == 1){
+	  				$('#'+_nick).removeClass('left');
+	  			} else {
+	  				$('#'+_nick).addClass('left');
+	  			}
 		  		moving = setTimeout(function(){
 					move(dir);
 				}, jump_speed)
@@ -87,8 +101,8 @@
 		  	
 			function jump_up(player){
 				jumping=true;
-				players[_nick].p_bottom+=2;
-				if (players[_nick].p_bottom<30){
+				players[_nick].p_bottom+=3;
+				if (players[_nick].p_bottom<60){
 					setTimeout(function(){jump_up(players[_nick])},jump_speed);
 				} else {
 					setTimeout(function(){jump_down(players[_nick])},jump_speed);
@@ -96,7 +110,7 @@
 		  		$('#'+_nick).css({bottom:players[_nick].p_bottom+'%'});
 			}
 			function jump_down(player){
-				players[_nick].p_bottom-=2;
+				players[_nick].p_bottom-=3;
 				if (players[_nick].p_bottom>3) {
 					setTimeout(function(){jump_down(players[_nick])},jump_speed);
 				} else {
@@ -107,7 +121,12 @@
 
 		  	function draw_players(){
 		  		$.each(players_s,function(k,v){
-		  			$('#server_'+this.nick).css({bottom:this.p_bottom+'%', left:this.p_left+'%'});
+		  			$('#'+this.nick+', #server_'+this.nick).css({bottom:this.p_bottom+'%', left:this.p_left+'%'}).html(this.hp);
+		  			if (this.dir == 1){
+		  				$('#server_'+this.nick).removeClass('left');
+		  			} else {
+		  				$('#server_'+this.nick).addClass('left');
+		  			}
 		  		})
 		  	}
 
@@ -115,18 +134,54 @@
 		  		$('#debug').html('downs[68]:'+downs[68]+'<br/>downs[65]:'+downs[65]+'<br/>gdir[65]:'+gdir)
 		  	}
 
+		  	function toggle_server_dave(){
+		  		var sd = $('#server_dave');
+		  		if(sd.is(':visible')){
+		  			sd.hide();
+		  		} else {
+		  			sd.show();
+		  		}
+		  	}
+
 		</script>
 		<style type="text/css">
-		.player { width: 3%; height: 10%; background:red; position: absolute; bottom: 2%; left: 5%; }
+		.player { width: 3%; height: 10%; background:blue; position: absolute; bottom: 2%; left: 5%; color: yellow }
+		.player:after { content:"D"; position: absolute; top: 10%; right:-10px; background: red; width:15px; z-index: 100;
+			-webkit-border-top-right-radius: 20px;
+			-webkit-border-bottom-right-radius: 20px;
+			-moz-border-radius-topright: 20px;
+			-moz-border-radius-bottomright: 20px;
+			border-top-right-radius: 20px;
+			border-bottom-right-radius: 20px;
+		}
+		.player.punch:after { right:-20px; z-index: 101; }
+		.player.left:after { content:"d"; position: absolute; top: 10%; left:-10px; right: auto; background: red;
+			-webkit-border-top-left-radius: 20px;
+			-webkit-border-bottom-left-radius: 20px;
+			-moz-border-radius-topleft: 20px;
+			-moz-border-radius-bottomleft: 20px;
+			border-top-left-radius: 20px;
+			border-bottom-left-radius: 20px;
+			-webkit-border-top-right-radius: 0px;
+			-webkit-border-bottom-right-radius: 0px;
+			-moz-border-radius-topright: 0px;
+			-moz-border-radius-bottomright: 0px;
+			border-top-right-radius: 0px;
+			border-bottom-right-radius: 0px;
+		}
+		.player.punch.left:after { left:-20px; }
+		.player:before { content:"- -"; position: absolute; top: -30px; right:10%; background: red; width:80%; height: 30px}
 		</style>
 	</head>
 
 	<body>
+		<a href="#" onclick="toggle_server_dave()">show/hide server</a>
 		<div id="debug">
 
 		</div>
 		<div id="dave" class="player"></div>
-		<div id="server_dave" class="player" style="background:none; border:2px green solid; margin:0px 0px -2px -2px"></div>
+		<div id="server_dave" class="player" style="display:none; background:none; border:2px green solid; margin:0px 0px -2px -2px"></div>
+		<div id="shane" class="player"></div>
 
 	</body>
 </html>

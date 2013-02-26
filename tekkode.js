@@ -24,8 +24,10 @@ app.get('/', function (req, res) {
 function player() {
 	this.player_id = players.length + 1;
 	this.nick = "default";
-	this.p_left = 5;
+	this.p_left = 10;
 	this.p_bottom = 2;
+	this.dir = 1;
+	this.hp = 100;
 }
 
 var players = {};
@@ -64,7 +66,28 @@ io.sockets.on('connection', function (socket) {
 			if (gdir == -1)
 				clearTimeout(moving);
 		} else if (data.key==87){
-		}  
+
+		} else if (data.key==32){
+			console.log(data.nick+' hit');
+			for (var key in players){ 
+				if (key != data.nick){
+					if (players[data.nick].dir == 1){
+						if (players[data.nick].p_left+3+7 > players[key].p_left 
+							&& players[data.nick].p_left-2 < players[key].p_left){
+							players[key].hp-=10;
+							change=true;
+						}
+					} else {
+						if (players[data.nick].p_left-3-3-7 < players[key].p_left
+							&& players[data.nick].p_left+2 > players[key].p_left){
+							players[key].hp-=10;
+							change=true;
+						}
+					}
+				}
+			}
+			
+		}
 	})
 
 });
@@ -75,6 +98,7 @@ function move(dir, nick){
 	// console.log(players[nick].p_left);
 	clearTimeout(moving);
 	players[nick].p_left+=dir;
+	players[nick].dir=dir;
 	// console.log(players[nick].p_left);
 	// console.log(players);
 	moving = setTimeout(function(){
@@ -84,8 +108,8 @@ function move(dir, nick){
 }
 
 function jump_up(player){
-	player.p_bottom+=2;
-	if (player.p_bottom<30){
+	player.p_bottom+=3;
+	if (player.p_bottom<60){
 		setTimeout(function(){jump_up(player)},jump_speed);
 	} else {
 		setTimeout(function(){jump_down(player)},jump_speed);
@@ -93,8 +117,8 @@ function jump_up(player){
 	change=true;
 }
 function jump_down(player){
-	player.p_bottom-=2;
-	if (player.p_bottom>2)
+	player.p_bottom-=3;
+	if (player.p_bottom>3)
 		setTimeout(function(){jump_down(player)},jump_speed);
 	change=true;
 }
