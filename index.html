@@ -109,7 +109,7 @@
 		  		// console.log(dir)
 		  		players[_nick].p_left+=dir;
 		  		players[_nick].dir=dir;
-		  		$('#'+_nick).css({left:players[_nick].p_left+'%'});
+		  		$('#'+_nick).stop(true, true).css({left:players[_nick].p_left+'%'});
 		  		if (dir == 1){
 	  				$('#'+_nick).removeClass('left');
 	  			} else {
@@ -130,7 +130,7 @@
 				} else {
 					setTimeout(function(){jump_down(players[_nick])},jump_speed);
 				}
-		  		$('#'+_nick).css({bottom:players[_nick].p_bottom+'%'});
+		  		$('#'+_nick).stop(true, true).css({bottom:players[_nick].p_bottom+'%'});
 			}
 			function jump_down(player){
 				players[_nick].p_bottom-=3;
@@ -155,7 +155,10 @@
 		  			}
 
 		  			var cn = this.nick;
-		  			el.css({bottom:this.p_bottom+'%', left:this.p_left+'%'}).find('.hp').html(this.hp);
+		  			el.stop(true, true).animate({
+		  				bottom:this.p_bottom+'%'
+		  				, left:this.p_left+'%'
+		  			},500).find('.hp').html(this.hp);
 		  			if (this.dir == 1){
 		  				el.removeClass('left');
 		  			} else {
