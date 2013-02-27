@@ -18,6 +18,11 @@ app.configure(function() {
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
+
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
@@ -128,7 +133,7 @@ function jump_down(player){
 }
 
 setInterval(function(){
-	if (change || no_change>30){
+	if (change || no_change>100){
 		io.sockets.emit('positions', players);
 		for (var key in players){ 
 			players[key].punch = false;
@@ -138,4 +143,4 @@ setInterval(function(){
 	} else {
 		no_change++;
 	}
-},50);
+},200);
