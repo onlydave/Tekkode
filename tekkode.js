@@ -5,7 +5,6 @@ var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 var jump_speed = 33;
-var gdir = null;
 var prev = {};
 var change = false;
 var no_change = 0;
@@ -68,10 +67,10 @@ io.sockets.on('connection', function (socket) {
 
 	socket.on('keyup', function(data){
 		if (data.key==68){
-			if (gdir == 1)
+			if (players[data.nick].dir == 1)
 				clearTimeout(timeouts[data.nick]);
 		} else if (data.key==65){
-			if (gdir == -1)
+			if (players[data.nick].dir == -1)
 				clearTimeout(timeouts[data.nick]);
 		} else if (data.key==87){
 
@@ -101,7 +100,6 @@ io.sockets.on('connection', function (socket) {
 });
 
 function move(dir, nick){
-	gdir = dir;
 	// console.log("move: "+nick);
 	// console.log(players[nick].p_left);
 	clearTimeout(timeouts[nick]);
@@ -145,4 +143,4 @@ setInterval(function(){
 	} else {
 		no_change++;
 	}
-},500);
+},300);
