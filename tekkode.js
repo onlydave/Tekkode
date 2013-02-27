@@ -33,8 +33,8 @@ function player() {
 	this.p_bottom = 2;
 	this.dir = 1;
 	this.hp = 100;
-	punch=false;
-	moving = null;
+	this.punch=false;
+	this.moving = null;
 }
 
 var players = {};
