@@ -47,9 +47,8 @@ io.sockets.on('connection', function (socket) {
 		var new_player = new player();
 		new_player.nick = data.nick;
 		players[data.nick] = new_player;
-		// console.log(players);
+		console.log("new player: "+data.nick);
 		change=true;
-		io.sockets.emit('positions', players);
 	})
 
 	socket.on('keydown', function(data){
@@ -143,4 +142,4 @@ setInterval(function(){
 	} else {
 		no_change++;
 	}
-},200);
+},500);

@@ -15,12 +15,13 @@
 			socket.on('joined', function (data) {
 			  	players = data;
 			  	players_s = data;
+		  		console.log("Joined:");
 			  	console.log(players);
 
 			  	socket.emit('add_player', {
 			  		nick: _nick
 			  	})
-			  	$('body').append('<div id="'+_nick+'" class="player"><div class="hp">100</div>'+_nick+'</div><div id="server_'+_nick+'" class="player server" style=""></div>')
+			  	//$('body').append('<div id="'+_nick+'" class="player"><div class="hp">100</div>'+_nick+'</div><div id="server_'+_nick+'" class="player server" style=""></div>')
 			});
 
 			var jump_speed = 33;
@@ -34,13 +35,14 @@
 
 		  	socket.on('positions', function (data) {
 			  	$.each(data, function(k,v){
-			  		if (k == _nick){
+			  		if (k == _nick && players[k]){
 			  			players[k].p_left = v.p_left;
 			  		} else {
 			  			players[k] = v;
 			  		}
 			  	})
 		  		players_s = data;
+		  		console.log("Positions:");
 		  		console.log(players);
 		  		draw_players();
 		  	});
@@ -51,15 +53,15 @@
 				//console.log(k);
 				if (k==68 && !downs[68]){
 					move(1);
-					console.log('move 1')
+					//console.log('move 1')
 					socket.emit('keydown', {nick:_nick,key:k});
 				} else if (k==65 && !downs[65]){
 					move(-1);
-					console.log('move -1')
+					// console.log('move -1')
 					socket.emit('keydown', {nick:_nick,key:k});
 				}
 				if (k==87 && !downs[87] && !jumping){
-					console.log('jump')
+					// console.log('jump')
 					jump_up();
 					socket.emit('keydown', {nick:_nick,key:k});
 				}  	
@@ -69,7 +71,7 @@
 		  	$(document).keyup(function(e){
 		  		ud()
 		  		var k = e.which;
-				console.log(k);
+				// console.log(k);
 				downs[k]=false;
 				if (k==68){
 					if (gdir == 1)
@@ -89,7 +91,7 @@
 			});
 
 			$(window).blur(function() {
-				console.log(downs);
+				// console.log(downs);
 		        $.each(downs, function(k,v){
 		        	if (v && (k==68||k==65)){
 		        		downs[k]=false;
@@ -104,7 +106,7 @@
 		  		ud()
 		  		gdir = dir;
 		  		clearTimeout(moving);
-		  		console.log(dir)
+		  		// console.log(dir)
 		  		players[_nick].p_left+=dir;
 		  		players[_nick].dir=dir;
 		  		$('#'+_nick).css({left:players[_nick].p_left+'%'});
@@ -145,7 +147,11 @@
 		  			var el = $('#'+this.nick+', #server_'+this.nick);
 
 		  			if (el.length<1){
-		  				$('body').append('<div id="'+this.nick+'" class="player"><div class="hp">'+this.hp+'</div>'+this.nick+'</div>')
+		  				if (this.nick == _nick){
+		  					$('body').append('<div id="'+_nick+'" class="player"><div class="hp">100</div>'+_nick+'</div><div id="server_'+_nick+'" class="player server" style=""></div>')
+		  				} else {
+		  					$('body').append('<div id="'+this.nick+'" class="player"><div class="hp">'+this.hp+'</div>'+this.nick+'</div>')
+		  				}
 		  			}
 
 		  			var cn = this.nick;
@@ -229,7 +235,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', end
 		.player:before { content:"- -"; font-size: 12px; text-align: right; position: absolute; top: -30px; right:10%; background: red; width:80%; height: 30px}
 		.player.left:before { text-align: left; }
 
-		.player.server {display:none; background:none; border:2px green solid; margin:0px 0px -2px -2px}
+		.player.server {/*display:none;*/ background:none; border:2px green solid; margin:0px 0px -2px -2px}
 		</style>
 	</head>
 
