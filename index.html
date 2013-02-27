@@ -143,8 +143,8 @@
 			}
 
 		  	function draw_players(){
-		  		$.each(players_s,function(k,v){
-		  			var el = $('#'+this.nick+', #server_'+this.nick);
+		  		$.each(players,function(k,v){
+		  			var el = $('#'+this.nick);
 
 		  			if (el.length<1){
 		  				if (this.nick == _nick){
@@ -168,6 +168,24 @@
 						}, 150)
 		  			}
 		  		})
+
+		  		var el = $('#server_'+_nick);
+
+		  		if (el.length<1){
+		  				if (this.nick == _nick){
+		  					$('body').append('<div id="'+_nick+'" class="player"><div class="hp">100</div>'+_nick+'</div><div id="server_'+_nick+'" class="player server" style=""></div>')
+		  				} else {
+		  					$('body').append('<div id="'+players_s[_nick].nick+'" class="player"><div class="hp">'+players_s[_nick].hp+'</div>'+players_s[_nick].nick+'</div>')
+		  				}
+		  			}
+
+		  			var cn = players_s[_nick].nick;
+		  			el.css({bottom:players_s[_nick].p_bottom+'%', left:players_s[_nick].p_left+'%'}).find('.hp').html(players_s[_nick].hp);
+		  			if (players_s[_nick].dir == 1){
+		  				el.removeClass('left');
+		  			} else {
+		  				el.addClass('left');
+		  			}
 		  	}
 
 		  	function ud(){
@@ -206,7 +224,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', end
 
 
 		}
-		.player { font-size: 10px; width: 3%; height: 10%; background:blue; position: absolute; bottom: 2%; left: 5%; color: yellow }
+		.player { font-size: 10px; width: 3%; height: 10%; background:blue; position: absolute; bottom: 2%; left: 10%; color: yellow }
 		.player.left { text-align: right; }
 		.player:after { content:""; height: 15px; position: absolute; top: 10%; right:-10px; background: red; width:15px; z-index: 100;
 			-webkit-border-top-right-radius: 20px;
