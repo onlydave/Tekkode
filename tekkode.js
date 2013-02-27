@@ -10,8 +10,8 @@ var gdir = null;
 var prev = {};
 var change = false;
 var no_change = 0;
-
-server.listen(8000);
+var port = process.env.PORT || 5000;
+server.listen(port);
 
 app.configure(function() {
     app.use(express.static(__dirname + '/public'));
