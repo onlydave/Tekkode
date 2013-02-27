@@ -37,6 +37,7 @@
 			  	$.each(data, function(k,v){
 			  		if (k == _nick && players[k]){
 			  			players[k].p_left = v.p_left;
+			  			players[k].hp = v.hp;
 			  		} else {
 			  			players[k] = v;
 			  		}

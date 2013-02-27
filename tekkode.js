@@ -35,7 +35,6 @@ function player() {
 	this.dir = 1;
 	this.hp = 100;
 	this.punch=false;
-	timeouts[this.nick] = null;
 }
 
 var players = {};
