@@ -140,7 +140,7 @@
 				} else {
 					jumping = false
 				}
-		  		$('#'+_nick).css({bottom:players[_nick].p_bottom+'%'});
+		  		$('#'+_nick).stop(true, true).css({bottom:players[_nick].p_bottom+'%'});
 			}
 
 		  	function draw_players(){
@@ -257,7 +257,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', end
 		.player:before { content:"- -"; font-size: 12px; text-align: right; position: absolute; top: -30px; right:10%; background: red; width:80%; height: 30px}
 		.player.left:before { text-align: left; }
 
-		.player.server {/*display:none;*/ background:none; border:2px green solid; margin:0px 0px -2px -2px}
+		.player.server {
+			display:none; 
+			background:none; border:2px green solid; margin:0px 0px -2px -2px}
 		</style>
 	</head>
 
