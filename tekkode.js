@@ -29,6 +29,7 @@ function player() {
 	this.p_bottom = 2;
 	this.dir = 1;
 	this.hp = 100;
+	punch=false;
 }
 
 var players = {};
@@ -70,19 +71,19 @@ io.sockets.on('connection', function (socket) {
 
 		} else if (data.key==32){
 			console.log(data.nick+' hit');
+			players[data.nick].punch = true;
+			change=true;
 			for (var key in players){ 
 				if (key != data.nick){
 					if (players[data.nick].dir == 1){
 						if (players[data.nick].p_left+3+7 > players[key].p_left 
 							&& players[data.nick].p_left-2 < players[key].p_left){
 							players[key].hp-=1;
-							change=true;
 						}
 					} else {
 						if (players[data.nick].p_left-3-3-7 < players[key].p_left
 							&& players[data.nick].p_left+2 > players[key].p_left){
 							players[key].hp-=1;
-							change=true;
 						}
 					}
 				}
@@ -127,11 +128,14 @@ function jump_down(player){
 }
 
 setInterval(function(){
-	if (change || no_change>5){
+	if (change || no_change>30){
 		io.sockets.emit('positions', players);
+		for (var key in players){ 
+			players[key].punch = false;
+		}
 		change=false;
 		no_change = 0;
 	} else {
 		no_change++;
 	}
-},200);
+},50);

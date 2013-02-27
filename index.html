@@ -5,7 +5,9 @@
 	 	<script src="http://code.jquery.com/jquery-latest.js"></script>
 	 	<script src="/socket.io/socket.io.js"></script>
 		<script>
-			var _nick = "dave";
+			var _nick = localStorage.nick || prompt('nick');
+			localStorage.nick = _nick;
+			document.title = _nick+' Tekkode';
 			var socket = io.connect('/');
 			var players = {};
 			var players_s = {};
@@ -17,9 +19,6 @@
 
 			  	socket.emit('add_player', {
 			  		nick: _nick
-			  	})
-			  	socket.emit('add_player', {
-			  		nick: 'shane'
 			  	})
 			});
 
@@ -136,11 +135,18 @@
 
 		  	function draw_players(){
 		  		$.each(players_s,function(k,v){
+		  			var cn = this.nick;
 		  			$('#'+this.nick+', #server_'+this.nick).css({bottom:this.p_bottom+'%', left:this.p_left+'%'}).html(this.hp);
 		  			if (this.dir == 1){
-		  				$('#server_'+this.nick).removeClass('left');
+		  				$('#'+this.nick+', #server_'+this.nick).removeClass('left');
 		  			} else {
-		  				$('#server_'+this.nick).addClass('left');
+		  				$('#'+this.nick+', #server_'+this.nick).addClass('left');
+		  			}
+		  			if (cn != _nick && this.punch){
+						$('#'+cn).addClass('punch');
+						setTimeout(function(){
+							$('#'+cn).removeClass('punch');
+						}, 150)
 		  			}
 		  		})
 		  	}
@@ -156,6 +162,12 @@
 		  		} else {
 		  			sd.show();
 		  		}
+		  	}
+
+		  	function new_nick(){
+		  		if (localStorage.nick)
+		  			localStorage.nick = prompt('nick');
+		  		window.location.reload();
 		  	}
 
 		</script>
@@ -193,6 +205,8 @@
 
 	<body>
 		<a href="#" onclick="toggle_server_dave()">show/hide server</a>
+		<br />
+		<a href="#" onclick="new_nick()">new nick</a>
 		<div id="debug">
 
 		</div>
