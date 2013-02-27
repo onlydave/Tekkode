@@ -67,10 +67,10 @@ io.sockets.on('connection', function (socket) {
 	socket.on('keyup', function(data){
 		if (data.key==68){
 			if (gdir == 1)
-				clearTimeout(players[data.nick]moving);
+				clearTimeout(players[data.nick].moving);
 		} else if (data.key==65){
 			if (gdir == -1)
-				clearTimeout(players[data.nick]moving);
+				clearTimeout(players[data.nick].moving);
 		} else if (data.key==87){
 
 		} else if (data.key==32){
@@ -102,13 +102,13 @@ function move(dir, nick){
 	gdir = dir;
 	// console.log("move: "+nick);
 	// console.log(players[nick].p_left);
-	clearTimeout(players[nick]moving);
+	clearTimeout(players[nick].moving);
 	players[nick].p_left+=dir;
 	players[nick].dir=dir;
 	// console.log(players[nick].p_left);
 	// console.log(players);
 	if (players[nick].p_left>1 && players[nick].p_left < 97){
-		players[nick]moving = setTimeout(function(){
+		players[nick].moving = setTimeout(function(){
 			move(dir, nick);
 		}, jump_speed);
 	}
