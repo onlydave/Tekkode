@@ -19,10 +19,15 @@
 			  	console.log(players);
 
 			  	socket.emit('add_player', {
-			  		nick: _nick
+			  		nick: _nick,
+			  		color: randColour()
 			  	})
 			  	//$('body').append('<div id="'+_nick+'" class="player"><div class="hp">100</div>'+_nick+'</div><div id="server_'+_nick+'" class="player server" style=""></div>')
 			});
+
+			function randColour(){
+				return '#'+Math.floor(Math.random()*16777215).toString(16);
+			}
 
 			var jump_speed = 33;
 
@@ -43,8 +48,8 @@
 			  		}
 			  	})
 		  		players_s = data;
-		  		console.log("Positions:");
-		  		console.log(players);
+		  		//console.log("Positions:");
+		  		//console.log(players);
 		  		draw_players();
 		  	});
 
@@ -149,9 +154,9 @@
 
 		  			if (el.length<1){
 		  				if (this.nick == _nick){
-		  					$('body').append('<div id="'+_nick+'" class="player"><div class="hp">100</div>'+_nick+'</div><div id="server_'+_nick+'" class="player server" style=""></div>')
+		  					$('body').append('<div id="'+_nick+'" class="player" style="background-color:'+this.color+'"><div class="hp">100</div>'+_nick+'</div><div id="server_'+_nick+'" class="player server" style=""></div>')
 		  				} else {
-		  					$('body').append('<div id="'+this.nick+'" class="player"><div class="hp">'+this.hp+'</div>'+this.nick+'</div>')
+		  					$('body').append('<div id="'+this.nick+'" class="player" style="background-color:'+this.color+'"><div class="hp">'+this.hp+'</div>'+this.nick+'</div>')
 		  				}
 		  			}
 

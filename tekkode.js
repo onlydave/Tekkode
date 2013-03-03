@@ -35,6 +35,7 @@ function player() {
 	this.dir = 1;
 	this.hp = 100;
 	this.punch=false;
+	this.color = "blue";
 }
 
 var players = {};
@@ -46,6 +47,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('add_player', function(data){
 		var new_player = new player();
 		new_player.nick = data.nick;
+		new_player.color = data.color;
 		players[data.nick] = new_player;
 		console.log("new player: "+data.nick);
 		change=true;
@@ -142,4 +144,4 @@ setInterval(function(){
 	} else {
 		no_change++;
 	}
-},300);
+},30);
