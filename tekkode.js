@@ -1,10 +1,15 @@
+var pubnub = require("pubnub").init({
+    publish_key   : "pub-c-8386988e-a104-47a3-9cab-8ffeb13cdda9",
+    subscribe_key : "sub-c-43e681c0-8444-11e2-9881-12313f022c90"
+});
+
 var express = require('express')
   , http = require('http');
 
 var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
-var jump_speed = 33;
+var jump_speed = 50;
 var prev = {};
 var change = false;
 var no_change = 0;
@@ -135,7 +140,10 @@ function jump_down(player){
 setInterval(function(){
 	if (change || no_change>100){
 		console.log(players);
-		io.sockets.emit('positions', players);
+		pubnub.publish({
+			channel: 'tekkode',
+			message: players
+		});
 		for (var key in players){ 
 			players[key].punch = false;
 		}
@@ -144,4 +152,4 @@ setInterval(function(){
 	} else {
 		no_change++;
 	}
-},30);
+},400);

@@ -4,7 +4,22 @@
 		<title>Tekkode</title>
 	 	<script src="http://code.jquery.com/jquery-latest.js"></script>
 	 	<script src="/socket.io/socket.io.js"></script>
+    	<script src="http://cdn.pubnub.com/pubnub-3.4.min.js"></script> 
 		<script>
+		var pubnub = PUBNUB.init({
+	        subscribe_key : 'sub-c-43e681c0-8444-11e2-9881-12313f022c90'
+	    });
+
+	    pubnub.subscribe({
+        	channel : "tekkode",
+	        message : function(m){ 
+	        	get_players(m);
+	        	console.info(new Date() + " " + m.spy.p_left);
+	        },
+	        connect : function(channel) {
+	            console.info('Pubnub subscribed')
+	        }
+	    })
 			var _nick = localStorage.nick || prompt('nick');
 			localStorage.nick = _nick;
 			document.title = _nick+' Tekkode';
@@ -30,7 +45,7 @@
 				return '#'+Math.floor(Math.random()*16777215).toString(16);
 			}
 
-			var jump_speed = 33;
+			var jump_speed = 50;
 
 			var moving = null;
 			var gdir = null;
@@ -39,7 +54,8 @@
 
 			var jumping = false;
 
-		  	socket.on('positions', function (data) {
+		  	//socket.on('positions', function (data) {
+		  	function get_players(data){
 			  	$.each(data, function(k,v){
 			  		if (k == _nick && players[k]){
 			  			if (allow_server_update){
@@ -57,7 +73,7 @@
 		  		//console.log("Positions:");
 		  		//console.log(players);
 		  		draw_players();
-		  	});
+		  	}
 
 		  	$(document).keydown(function(e){
 		  		ud();
@@ -170,7 +186,7 @@
 		  			el.stop(true, true).animate({
 		  				bottom:this.p_bottom+'%'
 		  				, left:this.p_left+'%'
-		  			},500).find('.hp').html(this.hp);
+		  			}, 200).find('.hp').html(this.hp);
 		  			if (this.dir == 1){
 		  				el.removeClass('left');
 		  			} else {
