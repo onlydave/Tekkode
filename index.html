@@ -12,6 +12,7 @@
 			var players = {};
 			var players_s = {};
 			var last_time = 0;
+			var allow_server_update = true;
 			socket.on('joined', function (data) {
 			  	players = data;
 			  	players_s = data;
@@ -41,8 +42,13 @@
 		  	socket.on('positions', function (data) {
 			  	$.each(data, function(k,v){
 			  		if (k == _nick && players[k]){
-			  			players[k].p_left = v.p_left;
-			  			players[k].hp = v.hp;
+			  			if (allow_server_update){
+			  				console.log("Allow server update, you were off by: "+(players[k].p_left - v.p_left))
+			  				players[k].p_left = v.p_left;
+			  				players[k].hp = v.hp;
+			  				allow_server_update = false;
+			  				setTimeout(function(){allow_server_update=true;},10000);
+			  			}
 			  		} else {
 			  			players[k] = v;
 			  		}
